@@ -52,6 +52,7 @@ To contribute to this project follow the steps
         #!/usr/bin/env bash 
         git-pylint-commit-hook
         ```
+     * Run `chmod +x .git/hooks/pre-commit`
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
