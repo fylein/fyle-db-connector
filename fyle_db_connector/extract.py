@@ -139,7 +139,7 @@ class FyleExtractConnector:
                 df_attachments.to_sql('attachments', self.__database.connection, if_exists='replace', index=False)
                 return df_attachments['expense_id'].to_list()
 
-        logger.info('%s attachments extracted.')
+        logger.info('0 attachments extracted.')
         return []
 
     def extract_categories(self) -> List[str]:
@@ -244,12 +244,63 @@ class FyleExtractConnector:
         if advances:
             df_advances = pd.DataFrame(advances)
 
-            print(df_advances.keys())
-
             df_advances['export_ids'] = df_advances['export_ids'].astype('str')
             df_advances['approved_by'] = df_advances['approved_by'].astype('str')
 
             df_advances.to_sql('advances', self.__database.connection, if_exists='replace', index=False)
             return df_advances['id'].to_list()
 
+        return []
+
+    def extract_advance_requests(self, state: List[str] = None, updated_at: List[str] = None,
+                                 exported: bool = None) -> List[str]:
+        """
+        Extract advance requests from Fyle
+        :param state:
+        :param updated_at:
+        :param exported:
+        :return: List of advance request ids
+        """
+        logger.info('Extracting advance requests from Fyle.')
+
+        advance_requests = self.__connection.AdvanceRequests.get_all(
+            state=state,
+            updated_at=updated_at,
+            exported=exported
+        )
+
+        logger.info('%s advance requests extracted.', str(len(advance_requests)))
+
+        if advance_requests:
+            df_advance_requests = pd.DataFrame(advance_requests)
+
+            df_advance_requests['export_ids'] = df_advance_requests['export_ids'].astype('str')
+            df_advance_requests['approved_by'] = df_advance_requests['approved_by'].astype('str')
+
+            if len(df_advance_requests['custom_field_values'].index):
+                advance_request_custom_fields = []
+
+                for row in df_advance_requests.to_dict(orient='records'):
+                    custom_field = {}
+                    custom_fields = row['custom_field_values']
+                    custom_field['advance_request_id'] = row['id']
+
+                    for field in custom_fields:
+                        custom_field[field['name']] = field['value']
+
+                    advance_request_custom_fields.append(custom_field)
+
+                df_advance_requests_custom_fields = pd.DataFrame(advance_request_custom_fields)
+                df_advance_requests_custom_fields.to_sql(
+                    'advance_request_custom_fields',
+                    self.__database.connection,
+                    if_exists='replace',
+                    index=False
+                )
+
+            df_advance_requests['custom_field_values'] = df_advance_requests['custom_field_values'].astype('str')
+
+            df_advance_requests.to_sql('advance_requests', self.__database.connection, if_exists='replace', index=False)
+
+            return df_advance_requests['id'].to_list()
         return []
