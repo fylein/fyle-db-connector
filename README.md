@@ -17,26 +17,40 @@ To use this connector you'll need these Fyle credentials used for OAuth2 authent
 This connector is very easy to use.
 1. First you'll need to create a connection using the main class FyleSDK.
 ```python
+import sqlite3
+
+from fylesdk import FyleSDK
 from fyle_db_connector import FyleExtractConnector
 
-config = {
-    'fyle_base_url': '<YOUR BASE URL>',
-    'fyle_client_id': '<YOUR CLIENT ID>',
-    'fyle_client_secret': '<YOUR CLIENT SECRET>',
-    'fyle_refresh_token': '<YOUR REFRESH TOKEN>' 
-}
 
-extract_connector = FyleExtractConnector(
-    config, database_connector
+dbconn = sqlite3.connect('/tmp/temp.db')
+
+connection = FyleSDK(
+    base_url='<BASE_URL>',
+    client_id="<CLIENT_ID>",
+    client_secret='<CLIENT_SECRET>',
+    refresh_token='<REFRESH_TOKEN>'
+)
+
+fyle_extract = FyleExtractConnector(
+    fyle_sdk_connection=connection,
+    dbconn=dbconn
 )
 ```
 2. After that you'll be able to extract data from fyle and store it in the db
 ```python
-# Extract Expenses
-extract_connector.extract_expenses()
+# Create the tables to for all objects
+fyle_extract.create_tables()
 
-#Extract Employees
-extract_connector.extract_employees()
+fyle_extract.extract_expenses(state=['PAYMENT_PROCESSING'])
+fyle_extract.extract_settlements()
+fyle_extract.extract_employees()
+fyle_extract.extract_reimbursements()
+fyle_extract.extract_advances()
+fyle_extract.extract_advance_requests(state=['PAID'])
+fyle_extract.extract_projects()
+fyle_extract.extract_cost_centers()
+fyle_extract.extract_categories()
 ```
 
 ## Contribute
