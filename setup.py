@@ -9,13 +9,14 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='fyle-db-connector',
-    version='0.3.0',
+    version='0.3.1',
     author='Shwetabh Kumar',
     author_email='shwetabh.kumar@fyle.in',
     description='Connects Fyle to a database connector to transfer information to and fro.',
     license='MIT',
     long_description=long_description,
     long_description_content_type='text/markdown',
+    include_package_data=True,
     keywords=['fyle', 'db', 'python', 'sdk', 'sqlite', 'postgres'],
     url='https://github.com/fylein/fyle-db-connector',
     packages=setuptools.find_packages(),

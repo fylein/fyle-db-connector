@@ -27,7 +27,7 @@ class FyleLoadConnector:
         :return: None
         """
         basepath = path.dirname(__file__)
-        ddl_path = path.join(basepath, 'extract_ddl.sql')
+        ddl_path = path.join(basepath, 'load_ddl.sql')
         ddl_sql = open(ddl_path, 'r').read()
         self.__dbconn.executescript(ddl_sql)
 
