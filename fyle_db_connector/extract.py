@@ -3,10 +3,10 @@ FyleExtractConnector(): Connection between Fyle and Database
 """
 
 import logging
+from os import path
 from typing import List
 
 import pandas as pd
-from fylesdk import FyleSDK
 
 logger = logging.getLogger('FyleConnector')
 
@@ -15,16 +15,21 @@ class FyleExtractConnector:
     """
     - Extract Data from Fyle and load to Database
     """
-    def __init__(self, fyle_config, database):
-        self.__database = database
 
-        self.__connection = FyleSDK(
-            base_url=fyle_config.get('fyle_base_url'),
-            client_id=fyle_config.get('fyle_client_id'),
-            client_secret=fyle_config.get('fyle_client_secret'),
-            refresh_token=fyle_config.get('fyle_refresh_token')
-        )
+    def __init__(self, fyle_sdk_connection, dbconn):
+        self.__dbconn = dbconn
+        self.__connection = fyle_sdk_connection
         logger.info('Fyle connection established.')
+
+    def create_tables(self):
+        """
+        Creates DB tables
+        :return: None
+        """
+        basepath = path.dirname(__file__)
+        ddl_path = path.join(basepath, 'extract_ddl.sql')
+        ddl_sql = open(ddl_path, 'r').read()
+        self.__dbconn.executescript(ddl_sql)
 
     def extract_settlements(self, updated_at: List['str'] = None, exported: bool = None) -> List[str]:
         """
@@ -42,7 +47,14 @@ class FyleExtractConnector:
         logger.info('%s settlements extracted.', str(len(df_settlements.index)))
 
         if settlements:
-            df_settlements.to_sql('settlements', self.__database.connection, if_exists='replace', index=False)
+            df_settlements = df_settlements[[
+                'id', 'created_at', 'updated_at', 'opening_date', 'closing_date',
+                'employee_id', 'employee_email', 'employee_code', 'creator_employee_id',
+                'creator_employee_email', 'creator_employee_code', 'org_id', 'org_name',
+                'exported'
+            ]]
+
+            df_settlements.to_sql('fyle_extract_settlements', self.__dbconn, if_exists='append', index=False)
             return df_settlements['id'].to_list()
 
         return []
@@ -61,13 +73,16 @@ class FyleExtractConnector:
         if employees:
             df_employees = pd.DataFrame(employees)
 
-            df_employees['custom_fields'] = df_employees['custom_fields'].astype('str')
-            df_employees['mileage_rate_labels'] = df_employees['mileage_rate_labels'].astype('str')
-            df_employees['annual_mileage_of_user_before_joining_fyle'] = df_employees[
-                'annual_mileage_of_user_before_joining_fyle'].astype('str')
-            df_employees['perdiem_names'] = df_employees['perdiem_names'].astype('str')
+            df_employees = df_employees[[
+                'id', 'created_at', 'updated_at', 'employee_email', 'employee_code',
+                'full_name', 'joining_date', 'location', 'level_id', 'level',
+                'business_unit', 'department_id', 'department', 'sub_department',
+                'approver1_email', 'approver2_email', 'approver3_email', 'title',
+                'branch_ifsc', 'branch_account', 'mobile', 'delegatee_email',
+                'default_cost_center_name', 'disabled', 'org_id', 'org_name'
+            ]]
 
-            df_employees.to_sql('employees', self.__database.connection, if_exists='replace', index=False)
+            df_employees.to_sql('fyle_extract_employees', self.__dbconn, if_exists='append', index=False)
             return df_employees['id'].to_list()
 
         return []
@@ -103,12 +118,19 @@ class FyleExtractConnector:
             df_expenses = pd.DataFrame(expenses)
 
             df_expenses['approved_by'] = df_expenses['approved_by'].map(lambda expense: expense[0] if expense else None)
-            df_expenses['approved_by'] = df_expenses['approved_by'].astype('str')
-            df_expenses['export_ids'] = df_expenses['export_ids'].astype('str')
-            df_expenses['custom_properties'] = df_expenses['custom_properties'].astype('str')
-            df_expenses['locations'] = df_expenses['locations'].astype('str')
 
-            df_expenses.to_sql('expenses', self.__database.connection, if_exists='replace', index=False)
+            df_expenses = df_expenses[[
+                'id', 'employee_id', 'employee_email', 'employee_code', 'spent_at', 'currency',
+                'amount', 'foreign_currency', 'foreign_amount', 'purpose', 'project_id', 'project_name',
+                'cost_center_id', 'cost_center_name', 'category_id', 'category_code', 'category_name',
+                'sub_category', 'settlement_id', 'expense_number', 'claim_number', 'trip_request_id',
+                'state', 'report_id', 'fund_source', 'reimbursable', 'created_at', 'updated_at',
+                'approved_at', 'settled_at', 'verified', 'verified_at', 'reimbursed_at', 'added_to_report_at',
+                'report_submitted_at', 'vendor', 'has_attachments', 'billable', 'exported',
+                'approved_by', 'org_id', 'org_name', 'created_by'
+            ]]
+
+            df_expenses.to_sql('fyle_extract_expenses', self.__dbconn, if_exists='append', index=False)
 
             return df_expenses['id'].to_list()
 
@@ -136,7 +158,7 @@ class FyleExtractConnector:
 
             if attachments:
                 df_attachments = pd.DataFrame(attachments)
-                df_attachments.to_sql('attachments', self.__database.connection, if_exists='replace', index=False)
+                df_attachments.to_sql('fyle_extract_attachments', self.__dbconn, if_exists='append', index=False)
                 return df_attachments['expense_id'].to_list()
 
         logger.info('0 attachments extracted.')
@@ -155,7 +177,13 @@ class FyleExtractConnector:
 
         if categories:
             df_categories = pd.DataFrame(categories)
-            df_categories.to_sql('categories', self.__database.connection, if_exists='replace', index=False)
+
+            df_categories = df_categories[[
+                'id', 'name', 'code', 'enabled', 'fyle_category', 'sub_category',
+                'created_at', 'updated_at', 'org_id', 'org_name'
+            ]]
+
+            df_categories.to_sql('fyle_extract_categories', self.__dbconn, if_exists='append', index=False)
             return df_categories['id'].to_list()
 
         return []
@@ -173,7 +201,14 @@ class FyleExtractConnector:
 
         if projects:
             df_projects = pd.DataFrame(projects)
-            df_projects.to_sql('projects', self.__database.connection, if_exists='replace', index=False)
+            df_projects = df_projects[[
+                'id', 'name', 'description', 'active', 'approver1_employee_id',
+                'approver1_employee_email', 'approver1_employee_code',
+                'approver2_employee_id', 'approver2_employee_email',
+                'approver2_employee_code', 'org_id', 'code', 'org_name'
+            ]]
+
+            df_projects.to_sql('fyle_extract_projects', self.__dbconn, if_exists='append', index=False)
             return df_projects['id'].to_list()
 
         return []
@@ -191,7 +226,9 @@ class FyleExtractConnector:
 
         if cost_centers:
             df_cost_centers = pd.DataFrame(cost_centers)
-            df_cost_centers.to_sql('cost_centers', self.__database.connection, if_exists='replace', index=False)
+            df_cost_centers = df_cost_centers[['id', 'name', 'description', 'code', 'active', 'org_id', 'org_name']]
+
+            df_cost_centers.to_sql('fyle_extract_cost_centers', self.__dbconn, if_exists='append', index=False)
             return df_cost_centers['id'].to_list()
 
         return []
@@ -222,8 +259,14 @@ class FyleExtractConnector:
 
         if reimbursements:
             df_reimbursements = pd.DataFrame(reimbursements)
-            df_reimbursements['export_ids'] = df_reimbursements['export_ids'].astype('str')
-            df_reimbursements.to_sql('reimbursements', self.__database.connection, if_exists='replace', index=False)
+
+            df_reimbursements = df_reimbursements[[
+                'id', 'created_at', 'updated_at', 'employee_id', 'employee_email',
+                'employee_code', 'org_id', 'org_name', 'currency', 'amount', 'state',
+                'report_ids', 'unique_id', 'purpose', 'settlement_id', 'exported'
+            ]]
+
+            df_reimbursements.to_sql('fyle_extract_reimbursements', self.__dbconn, if_exists='append', index=False)
             return df_reimbursements['id'].to_list()
 
         return []
@@ -244,10 +287,16 @@ class FyleExtractConnector:
         if advances:
             df_advances = pd.DataFrame(advances)
 
-            df_advances['export_ids'] = df_advances['export_ids'].astype('str')
-            df_advances['approved_by'] = df_advances['approved_by'].astype('str')
+            df_advances = df_advances[[
+                'id', 'created_at', 'updated_at', 'employee_id', 'employee_email',
+                'employee_code', 'project_id', 'project_name', 'currency', 'amount',
+                'purpose', 'issued_at', 'payment_mode', 'original_currency',
+                'original_amount', 'reference', 'settlement_id', 'trip_request_id',
+                'advance_number', 'advance_request_id', 'settled_at', 'created_by',
+                'exported', 'org_id', 'org_name'
+            ]]
 
-            df_advances.to_sql('advances', self.__database.connection, if_exists='replace', index=False)
+            df_advances.to_sql('fyle_extract_advances', self.__dbconn, if_exists='append', index=False)
             return df_advances['id'].to_list()
 
         return []
@@ -274,9 +323,6 @@ class FyleExtractConnector:
         if advance_requests:
             df_advance_requests = pd.DataFrame(advance_requests)
 
-            df_advance_requests['export_ids'] = df_advance_requests['export_ids'].astype('str')
-            df_advance_requests['approved_by'] = df_advance_requests['approved_by'].astype('str')
-
             if len(df_advance_requests['custom_field_values'].index):
                 advance_request_custom_fields = []
 
@@ -285,22 +331,29 @@ class FyleExtractConnector:
                     custom_fields = row['custom_field_values']
                     custom_field['advance_request_id'] = row['id']
 
-                    for field in custom_fields:
-                        custom_field[field['name']] = field['value']
+                    if custom_fields:
+                        for field in custom_fields:
+                            custom_field[field['name']] = field['value']
 
-                    advance_request_custom_fields.append(custom_field)
+                        advance_request_custom_fields.append(custom_field)
 
                 df_advance_requests_custom_fields = pd.DataFrame(advance_request_custom_fields)
                 df_advance_requests_custom_fields.to_sql(
-                    'advance_request_custom_fields',
-                    self.__database.connection,
+                    'fyle_extract_advance_request_custom_fields',
+                    self.__dbconn,
                     if_exists='replace',
                     index=False
                 )
 
-            df_advance_requests['custom_field_values'] = df_advance_requests['custom_field_values'].astype('str')
+            df_advance_requests = df_advance_requests[[
+                'updated_at', 'created_at', 'approved_at', 'id', 'purpose', 'notes',
+                'state', 'currency', 'amount', 'advance_id', 'advance_request_number',
+                'trip_request_id', 'project_id', 'source', 'is_sent_back', 'is_pulled_back',
+                'org_id', 'org_name', 'employee_email', 'employee_name', 'employee_id',
+                'exported'
+            ]]
 
-            df_advance_requests.to_sql('advance_requests', self.__database.connection, if_exists='replace', index=False)
-
+            df_advance_requests.to_sql('fyle_extract_advance_requests', self.__dbconn, if_exists='append', index=False)
             return df_advance_requests['id'].to_list()
+
         return []

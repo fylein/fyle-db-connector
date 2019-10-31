@@ -3,10 +3,10 @@ FyleLoadConnector(): Connection between Fyle and Database
 """
 
 import logging
+from os import path
 from typing import BinaryIO
 
 import pandas as pd
-from fylesdk import FyleSDK
 
 logger = logging.getLogger('FyleConnector')
 
@@ -15,16 +15,21 @@ class FyleLoadConnector:
     """
     - Extract Data from Database and load to Fyle
     """
-    def __init__(self, fyle_config, database):
-        self.__database = database
+    def __init__(self, fyle_sdk_connection, dbconn):
+        self.__dbconn = dbconn
+        self.__connection = fyle_sdk_connection
 
-        self.__connection = FyleSDK(
-            base_url=fyle_config.get('fyle_base_url'),
-            client_id=fyle_config.get('fyle_client_id'),
-            client_secret=fyle_config.get('fyle_client_secret'),
-            refresh_token=fyle_config.get('fyle_refresh_token')
-        )
         logger.info('Fyle connection established.')
+
+    def create_tables(self):
+        """
+        Creates DB tables
+        :return: None
+        """
+        basepath = path.dirname(__file__)
+        ddl_path = path.join(basepath, 'extract_ddl.sql')
+        ddl_sql = open(ddl_path, 'r').read()
+        self.__dbconn.executescript(ddl_sql)
 
     def __load_excel(self, file_path: str) -> str:
         """
@@ -57,11 +62,11 @@ class FyleLoadConnector:
         """
         logger.info('Pushing export batch to Fyle.')
 
-        batch = pd.read_sql_query(sql='select * from fyle_load_tpa_export_batch', con=self.__database.connection)
+        batch = pd.read_sql_query(sql='select * from fyle_load_tpa_export_batch', con=self.__dbconn)
 
         lineitems = pd.read_sql_query(
             sql='select * from fyle_load_tpa_export_batch_lineitems',
-            con=self.__database.connection
+            con=self.__dbconn
         )
 
         if not file_id:
