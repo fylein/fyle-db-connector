@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS fyle_load_tpa_export_batch;
+DROP TABLE IF EXISTS fyle_load_tpa_export_batches;
 DROP TABLE IF EXISTS fyle_load_tpa_export_batch_lineitems;
 
-CREATE TABLE fyle_load_tpa_export_batch (
+CREATE TABLE fyle_load_tpa_export_batches (
     id INTEGER,
     name TEXT,
     success BOOLEAN,

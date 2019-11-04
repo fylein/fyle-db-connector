@@ -62,33 +62,37 @@ class FyleLoadConnector:
         """
         logger.info('Pushing export batch to Fyle.')
 
-        batch = pd.read_sql_query(sql='select * from fyle_load_tpa_export_batch', con=self.__dbconn)
-
-        lineitems = pd.read_sql_query(
-            sql='select * from fyle_load_tpa_export_batch_lineitems',
-            con=self.__dbconn
-        )
+        batches = pd.read_sql_query(sql='select * from fyle_load_tpa_export_batches', con=self.__dbconn)
 
         if not file_id:
             if file_path:
                 file_id = self.__load_excel(file_path)
-            batch['file_id'] = file_id
+            batches['file_id'] = file_id
 
-        batch['success'] = True
+        batches['success'] = True
 
-        batch_payload = batch.to_dict(orient='records')
-        lineitems_payload = lineitems.to_dict(orient='records')
+        batches = batches.to_dict(orient='records')
 
-        if lineitems_payload:
-            batch_id = self.__connection.Exports.post_batch(batch_payload[0])['id']
+        logger.info('Uploading %s batches to Fyle', len(batches))
 
-            logger.info('Batch successfully upload. Uploading Line items.')
+        for batch in batches:
+            lineitems = pd.read_sql_query(
+                sql="select * from fyle_load_tpa_export_batch_lineitems where batch_id = '{0}'".format(batch['id']),
+                con=self.__dbconn
+            )
 
-            self.__connection.Exports.post_batch_lineitems(batch_id, lineitems_payload)
+            lineitems_payload = lineitems.to_dict(orient='records')
 
-            logger.info('%s Lineitems successfully uploaded.', len(lineitems_payload))
-        else:
-            logger.info('0 Lineitems. Skipping exports')
+            if lineitems_payload:
+                batch_id = self.__connection.Exports.post_batch(batch)['id']
+
+                logger.info('Batch successfully upload. Uploading Line items.')
+
+                self.__connection.Exports.post_batch_lineitems(batch_id, lineitems_payload)
+
+                logger.info('%s Lineitems successfully uploaded.', len(lineitems_payload))
+            else:
+                logger.info('0 Lineitems. Skipping exports')
 
     def load_file(self, file_name: str, file_data: BinaryIO, content_type: str) -> str:
         """
