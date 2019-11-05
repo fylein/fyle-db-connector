@@ -88,10 +88,11 @@ class FyleExtractConnector:
         return []
 
     def extract_expenses(self, settlement_ids: List[str] = None, state: List[str] = None,
-                         fund_source: List[str] = None, reimbursable: bool = None,
+                         fund_source: List[str] = None, reimbursable: bool = None, updated_at: List[str] = None,
                          exported: bool = None) -> List[str]:
         """
         Extract expenses from Fyle
+        :param updated_at: Extract expenses in exported_at date range
         :param exported: True for exported expenses and False for unexported expenses
         :param settlement_ids: List of settlement_ids
         :param state: List of expense states
@@ -105,6 +106,7 @@ class FyleExtractConnector:
         expenses = self.__connection.Expenses.get_all(
             settlement_id=settlement_ids,
             state=state,
+            updated_at=updated_at,
             fund_source=fund_source,
             exported=exported
         )
@@ -233,25 +235,24 @@ class FyleExtractConnector:
 
         return []
 
-    def extract_reimbursements(self, state: List[str] = None, exported: bool = None) -> List[str]:
+    def extract_reimbursements(self, state: List[str] = None, updated_at: List[str] = None,
+                               exported: bool = None) -> List[str]:
         """
         Extract reimbursements from Fyle
+        :param updated_at: Extract expenses within a date range.
         :param state: List of states
         :param exported: True for exported reimbursements and False for unexeported reimbursements
         :return: List of reimbursement ids
         """
         logger.info('Extracting reimbursements from Fyle.')
-        reimbursements = self.__connection.Reimbursements.get_all()
+        reimbursements = self.__connection.Reimbursements.get_all(
+            updated_at=updated_at,
+            exported=exported
+        )
 
         if state:
             reimbursements = list(filter(
                 lambda reimbursement: reimbursement['state'] in state,
-                reimbursements
-            ))
-
-        if exported:
-            reimbursements = list(filter(
-                lambda reimbursement: reimbursement['exported'] == exported,
                 reimbursements
             ))
 
