@@ -5,11 +5,7 @@ FyleExtractConnector(): Connection between Fyle and Database
 import logging
 from os import path
 from typing import List
-
 import pandas as pd
-
-logger = logging.getLogger('FyleConnector')
-
 
 class FyleExtractConnector:
     """
@@ -19,7 +15,8 @@ class FyleExtractConnector:
     def __init__(self, fyle_sdk_connection, dbconn):
         self.__dbconn = dbconn
         self.__connection = fyle_sdk_connection
-        logger.info('Fyle connection established.')
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.info('Fyle connection established')
 
     def create_tables(self):
         """
@@ -39,12 +36,12 @@ class FyleExtractConnector:
         :return: List of settlement ids
         """
 
-        logger.info('Extracting settlements from Fyle.')
+        self.logger.info('Extracting settlements from Fyle.')
 
         settlements = self.__connection.Settlements.get_all(updated_at=updated_at, exported=exported)
 
         df_settlements = pd.DataFrame(settlements)
-        logger.info('%s settlements extracted.', str(len(df_settlements.index)))
+        self.logger.info('%s settlements extracted.', str(len(df_settlements.index)))
 
         if settlements:
             df_settlements = df_settlements[[
@@ -65,10 +62,10 @@ class FyleExtractConnector:
         :return: List of employee ids
         """
 
-        logger.info('Extracting employees from Fyle.')
+        self.logger.info('Extracting employees from Fyle.')
         employees = self.__connection.Employees.get_all()
 
-        logger.info('%s employees extracted.', str(len(employees)))
+        self.logger.info('%s employees extracted.', str(len(employees)))
 
         if employees:
             df_employees = pd.DataFrame(employees)
@@ -101,7 +98,7 @@ class FyleExtractConnector:
         :return: List of expense ids
         """
 
-        logger.info('Extracting expenses from Fyle.')
+        self.logger.info('Extracting expenses from Fyle.')
 
         expenses = self.__connection.Expenses.get_all(
             settlement_id=settlement_ids,
@@ -114,7 +111,7 @@ class FyleExtractConnector:
         if reimbursable is not None:
             expenses = list(filter(lambda expense: expense['reimbursable'], expenses))
 
-        logger.info('%s expenses extracted.', str(len(expenses)))
+        self.logger.info('%s expenses extracted.', str(len(expenses)))
 
         if expenses:
             df_expenses = pd.DataFrame(expenses)
@@ -146,7 +143,7 @@ class FyleExtractConnector:
         """
         attachments = []
 
-        logger.info('Extracting attachments from Fyle')
+        self.logger.info('Extracting attachments from Fyle')
 
         if expense_ids:
             for expense_id in expense_ids:
@@ -156,14 +153,14 @@ class FyleExtractConnector:
                     attachment['expense_id'] = expense_id
                     attachments.append(attachment)
 
-            logger.info('%s attachments extracted.', str(len(attachments)))
+            self.logger.info('%s attachments extracted.', str(len(attachments)))
 
             if attachments:
                 df_attachments = pd.DataFrame(attachments)
                 df_attachments.to_sql('fyle_extract_attachments', self.__dbconn, if_exists='append', index=False)
                 return df_attachments['expense_id'].to_list()
 
-        logger.info('0 attachments extracted.')
+        self.logger.info('0 attachments extracted.')
         return []
 
     def extract_categories(self) -> List[str]:
@@ -171,11 +168,11 @@ class FyleExtractConnector:
         Extract categories from Fyle
         :return: List of category ids
         """
-        logger.info('Extracting categories from Fyle.')
+        self.logger.info('Extracting categories from Fyle.')
 
         categories = self.__connection.Categories.get()['data']
 
-        logger.info('%s categories extracted.', str(len(categories)))
+        self.logger.info('%s categories extracted.', str(len(categories)))
 
         if categories:
             df_categories = pd.DataFrame(categories)
@@ -195,11 +192,11 @@ class FyleExtractConnector:
         Extract projects from Fyle
         :return: List of project ids
         """
-        logger.info('Extracting categories from Fyle.')
+        self.logger.info('Extracting categories from Fyle.')
 
         projects = self.__connection.Projects.get()['data']
 
-        logger.info('%s projects extracted.', str(len(projects)))
+        self.logger.info('%s projects extracted.', str(len(projects)))
 
         if projects:
             df_projects = pd.DataFrame(projects)
@@ -220,11 +217,11 @@ class FyleExtractConnector:
         Extract cost centers from Fyle
         :return: List of cost center ids
         """
-        logger.info('Extracting categories from Fyle.')
+        self.logger.info('Extracting categories from Fyle.')
 
         cost_centers = self.__connection.CostCenters.get(False)['data']
 
-        logger.info('%s cost centers extracted.', str(len(cost_centers)))
+        self.logger.info('%s cost centers extracted.', str(len(cost_centers)))
 
         if cost_centers:
             df_cost_centers = pd.DataFrame(cost_centers)
@@ -244,7 +241,7 @@ class FyleExtractConnector:
         :param exported: True for exported reimbursements and False for unexeported reimbursements
         :return: List of reimbursement ids
         """
-        logger.info('Extracting reimbursements from Fyle.')
+        self.logger.info('Extracting reimbursements from Fyle.')
         reimbursements = self.__connection.Reimbursements.get_all(
             updated_at=updated_at,
             exported=exported
@@ -256,7 +253,7 @@ class FyleExtractConnector:
                 reimbursements
             ))
 
-        logger.info('%s reimbursements extracted.', str(len(reimbursements)))
+        self.logger.info('%s reimbursements extracted.', str(len(reimbursements)))
 
         if reimbursements:
             df_reimbursements = pd.DataFrame(reimbursements)
@@ -278,12 +275,12 @@ class FyleExtractConnector:
         :param settlement_ids: List of settlement ids
         :return: List of advance ids
         """
-        logger.info('Extracting advances from Fyle.')
+        self.logger.info('Extracting advances from Fyle.')
         advances = self.__connection.Advances.get_all(
             settlement_id=settlement_ids
         )
 
-        logger.info('%s advances extracted.', str(len(advances)))
+        self.logger.info('%s advances extracted.', str(len(advances)))
 
         if advances:
             df_advances = pd.DataFrame(advances)
@@ -311,7 +308,7 @@ class FyleExtractConnector:
         :param exported:
         :return: List of advance request ids
         """
-        logger.info('Extracting advance requests from Fyle.')
+        self.logger.info('Extracting advance requests from Fyle.')
 
         advance_requests = self.__connection.AdvanceRequests.get_all(
             state=state,
@@ -319,7 +316,7 @@ class FyleExtractConnector:
             exported=exported
         )
 
-        logger.info('%s advance requests extracted.', str(len(advance_requests)))
+        self.logger.info('%s advance requests extracted.', str(len(advance_requests)))
 
         if advance_requests:
             df_advance_requests = pd.DataFrame(advance_requests)
