@@ -7,7 +7,6 @@ from os import path
 from typing import BinaryIO
 import pandas as pd
 
-
 class FyleLoadConnector:
     """
     - Extract Data from Database and load to Fyle
@@ -59,7 +58,7 @@ class FyleLoadConnector:
         :return: None
         """
         batches = pd.read_sql_query(sql=f"select * from fyle_load_tpa_export_batches where id = '{batch_id}' limit 1", con=self.__dbconn)
-        if not batches:
+        if batches.empty():
             self.logger.info('No such batch')
             return
         if not file_id:
@@ -97,10 +96,11 @@ class FyleLoadConnector:
         self.logger.warn('method deprecated - please use load_tpa_export_batch')
 
         batches_df = pd.read_sql_query(sql='select id from fyle_load_tpa_export_batches', con=self.__dbconn)
+        if batches_df.empty():
+            logger.info('nothing to export')
+            return
         batches = batches_df.to_dict(orient='records')
-
         self.logger.info('Pushing %d batches to Fyle', len(batches))
-
         for batch in batches:
             self.load_tpa_export_batch(batch_id=batch['id'], file_path=file_path, file_id=file_id)
 
