@@ -57,34 +57,34 @@ class FyleLoadConnector:
         :param file_id: Id of file already uploaded to Fyle
         :return: None
         """
-        batches = pd.read_sql_query(sql=f"select * from fyle_load_tpa_export_batches where id = '{batch_id}' limit 1", con=self.__dbconn)
-        if batches.empty():
+        batches_df = pd.read_sql_query(sql=f"select * from fyle_load_tpa_export_batches where id = '{batch_id}' limit 1", con=self.__dbconn)
+        if len(batches_df) == 0:
             self.logger.info('No such batch')
             return
         if not file_id:
             if file_path:
                 file_id = self.__load_excel(file_path)
-            batches['file_id'] = file_id
-        batches['success'] = True
-        batches = batches.to_dict(orient='records')
+            batches_df['file_id'] = file_id
+        batches_df['success'] = True
+        batches = batches_df.to_dict(orient='records')
         batch = batches[0]
         self.logger.info('Uploading batch to Fyle')
 
-        lineitems = pd.read_sql_query(
+        lineitems_df = pd.read_sql_query(
             sql=f"select * from fyle_load_tpa_export_batch_lineitems where batch_id = '{batch_id}'",
             con=self.__dbconn
         )
 
-        lineitems_payload = lineitems.to_dict(orient='records')
-
-        if not lineitems_payload:
-            self.logger.info('0 Lineitems. Skipping exports')
+        if len(lineitems_df) == 0:
+            self.logger.info('Batch %s has no lineitems, skipping', batch_id)
             return
+
+        lineitems = lineitems_df.to_dict(orient='records')
 
         batch_id = self.__connection.Exports.post_batch(batch)['id']
         self.logger.info('Batch successfully upload. Uploading Line items.')
-        self.__connection.Exports.post_batch_lineitems(batch_id, lineitems_payload)
-        self.logger.info('%s Lineitems successfully uploaded.', len(lineitems_payload))
+        self.__connection.Exports.post_batch_lineitems(batch_id, lineitems)
+        self.logger.info('%s Lineitems successfully uploaded.', len(lineitems))
 
     def load_tpa_exports(self, file_path: str = None, file_id: str = None) -> None:
         """
@@ -96,7 +96,7 @@ class FyleLoadConnector:
         self.logger.warn('method deprecated - please use load_tpa_export_batch')
 
         batches_df = pd.read_sql_query(sql='select id from fyle_load_tpa_export_batches', con=self.__dbconn)
-        if batches_df.empty():
+        if len(batches_df) == 0:
             logger.info('nothing to export')
             return
         batches = batches_df.to_dict(orient='records')
