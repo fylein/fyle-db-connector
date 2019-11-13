@@ -1,0 +1,17 @@
+{
+    "expenses_get_all": [],
+    "settlements_get_all": [],
+    "reimbursements_get_all": [],
+    "employees_get_all": [],
+    "reports_get_all": [],
+    "projects_get": {
+      "url": "/api/tpa/v1/projects",
+      "resource_type": "Project",
+      "data": []
+    },
+    "categories_get": {
+      "url": "/api/tpa/v1/categories",
+      "resource_type": "Category",
+      "data": []
+    }
+  }

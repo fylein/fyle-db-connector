@@ -6,6 +6,7 @@ import logging
 from os import path
 from typing import List
 import pandas as pd
+import sqlite3
 
 class FyleExtractConnector:
     """
@@ -15,6 +16,8 @@ class FyleExtractConnector:
     def __init__(self, fyle_sdk_connection, dbconn):
         self.__dbconn = dbconn
         self.__connection = fyle_sdk_connection
+        self.__dbconn.row_factory = sqlite3.Row
+
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.info('Fyle connection established')
 
