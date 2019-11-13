@@ -93,7 +93,7 @@ class FyleLoadConnector:
         :param file_id: Id of file already uploaded to Fyle
         :return: None
         """
-        self.logger.warn('method deprecated - please use load_tpa_export_batch')
+        self.logger.warning('method deprecated - please use load_tpa_export_batch')
 
         batches_df = pd.read_sql_query(sql='select id from fyle_load_tpa_export_batches', con=self.__dbconn)
         if len(batches_df) == 0:

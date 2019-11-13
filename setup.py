@@ -9,7 +9,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='fyle-db-connector',
-    version='0.5.3',
+    version='0.5.4',
     author='Shwetabh Kumar',
     author_email='shwetabh.kumar@fyle.in',
     description='Connects Fyle to a database connector to transfer information to and fro.',
@@ -21,9 +21,8 @@ setuptools.setup(
     url='https://github.com/fylein/fyle-db-connector',
     packages=setuptools.find_packages(),
     install_requires=[
-        'typing==3.7.4.1',
         'pandas==0.25.2',
-        'logger==1.4'
+        'fylesdk==0.10.0'
     ],
     classifiers=[
         'Topic :: Internet :: WWW/HTTP',
