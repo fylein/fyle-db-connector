@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS fyle_extract_employees;
 DROP TABLE IF EXISTS fyle_extract_expenses;
+DROP TABLE IF EXISTS fyle_extract_corporate_credit_card_expenses;
 DROP TABLE IF EXISTS fyle_extract_settlements;
 DROP TABLE IF EXISTS fyle_extract_reimbursements;
 DROP TABLE IF EXISTS fyle_extract_advances;
@@ -77,11 +78,37 @@ CREATE TABLE fyle_extract_expenses (
   "vendor" TEXT,
   "has_attachments" INTEGER,
   "billable" TEXT,
-  "exported" integer,
+  "exported" INTEGER,
   "approved_by" TEXT,
   "org_id" TEXT,
   "org_name" TEXT,
   "created_by" TEXT
+);
+
+CREATE TABLE fyle_extract_corporate_credit_card_expenses (
+  "id" TEXT,
+  "employee_email" TEXT,
+  "org_user_id" TEXT,
+  "org_id" TEXT,
+  "org_name" TEXT,
+  "created_at" DATETIME,
+  "updated_at" DATETIME,
+  "spent_at" DATETIME,
+  "amount" REAL,
+  "currency" TEXT,
+  "foreign_amount" REAL,
+  "foreign_currency" TEXT,
+  "vendor" TEXT,
+  "description" TEXT,
+  "settlement_id" TEXT,
+  "corporate_credit_card_account_number" TEXT,
+  "personal" INTEGER,
+  "expense_id" TEXT,
+  "reimbursement_state" TEXT,
+  "transaction_type" TEXT,
+  "state" TEXT,
+  "exported" INTEGER,
+  "exported_at" DATETIME
 );
 
 CREATE TABLE fyle_extract_settlements (

@@ -4,9 +4,10 @@ FyleExtractConnector(): Connection between Fyle and Database
 
 import logging
 from os import path
+import sqlite3
 from typing import List
 import pandas as pd
-import sqlite3
+
 
 class FyleExtractConnector:
     """
@@ -31,7 +32,7 @@ class FyleExtractConnector:
         ddl_sql = open(ddl_path, 'r').read()
         self.__dbconn.executescript(ddl_sql)
 
-    def extract_settlements(self, updated_at: List['str'] = None, exported: bool = None) -> List[str]:
+    def extract_settlements(self, updated_at: List[str] = None, exported: bool = None) -> List[str]:
         """
         Extract settlements from Fyle
         :param updated_at: Date string in yyyy-MM-ddTHH:mm:ss.SSSZ format along with operator in RHS colon pattern.
@@ -135,6 +136,55 @@ class FyleExtractConnector:
             df_expenses.to_sql('fyle_extract_expenses', self.__dbconn, if_exists='append', index=False)
 
             return df_expenses['id'].to_list()
+
+        return []
+
+    def extract_corporate_credit_card_expenses(self, settlement_ids: List[str] = None, state: List[str] = None,
+                                               reimbursement_state: List[str] = None, transaction_type: str = None,
+                                               updated_at: List[str] = None, spent_at: List[str] = None,
+                                               exported: bool = None, personal: bool = None) -> List[str]:
+        """
+        Extract corporate credit card expenses from fyle.
+        :param settlement_ids: List of settlement_ids
+        :param state: state of corporate credit card expense INITIALIZED / IN_PROGRESS / SETTLED
+        :param reimbursement_state: state of reimbursement PENDING / COMPLETE
+        :param transaction_type: DEBIT / CREDIT
+        :param updated_at: Extract expenses in updated_at date range
+        :param spent_at: Extract expenses in spent_at date range
+        :param exported: True for exported expenses and False for unexported expenses
+        :param personal: True for personal expenses and False for company expenses
+        :return:
+        """
+
+        self.logger.info('Extracting corporate credit card expenses from Fyle.')
+
+        ccc_expenses = self.__connection.CorporateCreditCardExpenses.get_all(
+            settlement_id=settlement_ids,
+            state=state,
+            reimbursement_state=reimbursement_state,
+            transaction_type=transaction_type,
+            updated_at=updated_at,
+            spent_at=spent_at,
+            exported=exported,
+            personal=personal
+        )
+
+        self.logger.info('%s expenses extracted.', str(len(ccc_expenses)))
+
+        if ccc_expenses:
+            df_ccc_expenses = pd.DataFrame(ccc_expenses)
+
+            df_ccc_expenses = df_ccc_expenses[[
+                'id', 'employee_email', 'org_user_id', 'org_id', 'org_name', 'created_at', 'updated_at', 'spent_at',
+                'amount', 'currency', 'foreign_amount', 'foreign_currency', 'vendor', 'description', 'settlement_id',
+                'corporate_credit_card_account_number', 'personal', 'expense_id', 'reimbursement_state', 'state',
+                'transaction_type', 'exported', 'exported_at'
+            ]]
+
+            df_ccc_expenses.to_sql('fyle_extract_corporate_credit_card_expenses', self.__dbconn, if_exists='append',
+                                   index=False)
+
+            return df_ccc_expenses['id'].to_list()
 
         return []
 

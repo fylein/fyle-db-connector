@@ -7,6 +7,7 @@ from os import path
 from typing import BinaryIO
 import pandas as pd
 
+
 class FyleLoadConnector:
     """
     - Extract Data from Database and load to Fyle
@@ -97,7 +98,7 @@ class FyleLoadConnector:
 
         batches_df = pd.read_sql_query(sql='select id from fyle_load_tpa_export_batches', con=self.__dbconn)
         if len(batches_df) == 0:
-            logger.info('nothing to export')
+            self.logger.info('nothing to export')
             return
         batches = batches_df.to_dict(orient='records')
         self.logger.info('Pushing %d batches to Fyle', len(batches))
