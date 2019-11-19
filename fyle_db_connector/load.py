@@ -58,14 +58,17 @@ class FyleLoadConnector:
         :param file_id: Id of file already uploaded to Fyle
         :return: None
         """
-        batches_df = pd.read_sql_query(sql=f"select * from fyle_load_tpa_export_batches where id = '{batch_id}' limit 1", con=self.__dbconn)
+        batches_df = pd.read_sql_query(sql=f"select * from fyle_load_tpa_export_batches where "
+                                           f"id = '{batch_id}' limit 1", con=self.__dbconn)
         if len(batches_df) == 0:
             self.logger.info('No such batch')
             return
+
         if not file_id:
             if file_path:
                 file_id = self.__load_excel(file_path)
-            batches_df['file_id'] = file_id
+        batches_df['file_id'] = file_id
+
         batches_df['success'] = True
         batches = batches_df.to_dict(orient='records')
         batch = batches[0]
