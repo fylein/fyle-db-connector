@@ -135,6 +135,20 @@ class FyleExtractConnector:
 
             df_expenses.to_sql('fyle_extract_expenses', self.__dbconn, if_exists='append', index=False)
 
+            custom_properties = []
+            for e in expenses:
+                if 'custom_properties' in e and e['custom_properties']:
+                    for cp in e['custom_properties']:
+                        custom_properties.append({
+                                'expense_id': e['id'],
+                                'name': cp['name'],
+                                'value': cp['value']
+                        })
+
+            if custom_properties:
+                df_custom_properties = pd.DataFrame(custom_properties)
+                df_custom_properties.to_sql('fyle_extract_expense_custom_properties', self.__dbconn, if_exists='append', index=False)
+
             return df_expenses['id'].to_list()
 
         return []

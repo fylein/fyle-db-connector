@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS fyle_extract_employees;
 DROP TABLE IF EXISTS fyle_extract_expenses;
+DROP TABLE IF EXISTS fyle_extract_expense_custom_properties;
 DROP TABLE IF EXISTS fyle_extract_corporate_credit_card_expenses;
 DROP TABLE IF EXISTS fyle_extract_settlements;
 DROP TABLE IF EXISTS fyle_extract_reimbursements;
@@ -83,6 +84,12 @@ CREATE TABLE fyle_extract_expenses (
   "org_id" TEXT,
   "org_name" TEXT,
   "created_by" TEXT
+);
+
+CREATE TABLE fyle_extract_expense_custom_properties (
+  "expense_id" text,
+  "name" text,
+  "value" text
 );
 
 CREATE TABLE fyle_extract_corporate_credit_card_expenses (
