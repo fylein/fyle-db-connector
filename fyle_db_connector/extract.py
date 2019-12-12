@@ -90,9 +90,10 @@ class FyleExtractConnector:
 
     def extract_expenses(self, settlement_ids: List[str] = None, state: List[str] = None,
                          fund_source: List[str] = None, reimbursable: bool = None, updated_at: List[str] = None,
-                         exported: bool = None) -> List[str]:
+                         exported: bool = None, extract_custom_fields: bool = True) -> List[str]:
         """
         Extract expenses from Fyle
+        :param extract_custom_fields: Flag to extract custom fields, true by default
         :param updated_at: Extract expenses in exported_at date range
         :param exported: True for exported expenses and False for unexported expenses
         :param settlement_ids: List of settlement_ids
@@ -145,9 +146,11 @@ class FyleExtractConnector:
                                 'value': cp['value']
                         })
 
-            if custom_properties:
-                df_custom_properties = pd.DataFrame(custom_properties)
-                df_custom_properties.to_sql('fyle_extract_expense_custom_properties', self.__dbconn, if_exists='append', index=False)
+            if extract_custom_fields:
+                if custom_properties:
+                    df_custom_properties = pd.DataFrame(custom_properties)
+                    df_custom_properties.to_sql('fyle_extract_expense_custom_properties', self.__dbconn,
+                                                if_exists='append', index=False)
 
             return df_expenses['id'].to_list()
 
