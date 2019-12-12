@@ -141,9 +141,9 @@ class FyleExtractConnector:
                 if 'custom_properties' in e and e['custom_properties']:
                     for cp in e['custom_properties']:
                         custom_properties.append({
-                                'expense_id': e['id'],
-                                'name': cp['name'],
-                                'value': cp['value']
+                            'expense_id': e['id'],
+                            'name': cp['name'],
+                            'value': cp['value']
                         })
 
             if extract_custom_fields:
