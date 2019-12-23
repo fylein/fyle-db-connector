@@ -1,8 +1,8 @@
-import pytest
 import logging
-from common.utilities import dict_compare_keys
+from test.common.utilities import dict_compare_keys
 
 logger = logging.getLogger(__name__)
+
 
 def test_employees(fyle, mock_fyle):
     data = fyle.Employees.get_all()
