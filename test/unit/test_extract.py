@@ -1,10 +1,10 @@
 import logging
 
-from common.utilities import (dbconn_table_num_rows, dbconn_table_row_dict,
-                              dict_compare_keys, get_mock_fyle_empty)
+from test.common.utilities import (dbconn_table_num_rows, dbconn_table_row_dict, dict_compare_keys, get_mock_fyle_empty)
 from fyle_db_connector.extract import FyleExtractConnector
 
 logger = logging.getLogger(__name__)
+
 
 def test_employees(fec):
     dbconn = fec._FyleExtractConnector__dbconn
@@ -16,6 +16,7 @@ def test_employees(fec):
     assert dbconn_table_num_rows(dbconn, 'fyle_extract_employees') == len(fyle_data), 'row count mismatch'
     assert len(ids) == 12, 'return value messed up'
 
+
 def test_settlements(fec):
     dbconn = fec._FyleExtractConnector__dbconn
     fyle = fec._FyleExtractConnector__connection
@@ -25,6 +26,7 @@ def test_settlements(fec):
     assert dict_compare_keys(db_data, fyle_data[0]) == [], 'db table has some columns that fyle doesnt'
     assert dbconn_table_num_rows(dbconn, 'fyle_extract_settlements') == len(fyle_data), 'row count mismatch'
     assert len(ids) == 3, 'return value messed up'
+
 
 def test_reimbursements(fec):
     dbconn = fec._FyleExtractConnector__dbconn
@@ -47,6 +49,7 @@ def test_expenses(fec):
     assert dbconn_table_num_rows(dbconn, 'fyle_extract_expenses') == len(fyle_data), 'row count mismatch'
     assert len(ids) == 5, 'return value messed up'
 
+
 def test_categories(fec):
     dbconn = fec._FyleExtractConnector__dbconn
     fyle = fec._FyleExtractConnector__connection
@@ -56,6 +59,7 @@ def test_categories(fec):
     assert dict_compare_keys(db_data, fyle_data[0]) == [], 'db table has some columns that fyle doesnt'
     assert dbconn_table_num_rows(dbconn, 'fyle_extract_categories') == len(fyle_data), 'row count mismatch'
     assert len(ids) == 26, 'return value messed up'
+
 
 def test_projects(fec):
     dbconn = fec._FyleExtractConnector__dbconn
