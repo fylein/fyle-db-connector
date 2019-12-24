@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 def get_mock_fyle_dict(filename):
     """
-
+    get the mock_fyle dictionary
     :param filename: filename
     :return: mock_fyle_dict
     """
@@ -23,7 +23,7 @@ def get_mock_fyle_dict(filename):
 
 def get_mock_fyle_from_file(filename):
     """
-
+    get mock_fyle dictionary from the mock_file provided
     :param filename: filename
     :return: mock_fyle
     """
@@ -46,7 +46,7 @@ def get_mock_fyle_from_file(filename):
 
 def get_mock_fyle():
     """
-
+    get mock_fyle containing mock_data
     :return: mock_fyle
     """
     return get_mock_fyle_from_file('mock_fyle.json')
@@ -54,7 +54,7 @@ def get_mock_fyle():
 
 def get_mock_fyle_empty():
     """
-
+    get empty mock_fyle
     :return: mock_fyle
     """
     return get_mock_fyle_from_file('mock_fyle_empty.json')
@@ -98,7 +98,7 @@ def dbconn_table_num_rows(dbconn, tablename):
 
 def dbconn_table_row_dict(dbconn, tablename):
     """
-
+    get dictionary first row of the table
     :param dbconn: database connection
     :param tablename: name of the table
     :return: dict containing the first row of the table

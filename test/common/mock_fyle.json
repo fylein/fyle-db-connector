@@ -1336,8 +1336,8 @@
       ],
 
   "cost_centers_get": {
-    "url": "/api/tpa/v1/categories",
-    "resource_type": "Category",
+    "url": "/api/tpa/v1/cost_centers",
+    "resource_type": "CostCenters",
     "data": [
       {
             "active": true,

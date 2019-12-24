@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @pytest.fixture
 def mock_fyle():
     """
-
+    make mock_fyle connection
     :return: mock_fyle
     """
     return get_mock_fyle()
@@ -23,7 +23,7 @@ def mock_fyle():
 @pytest.fixture(scope='module')
 def fyle():
     """
-
+    make fyle_connection
     :return: fyle_connection
     """
     return fyle_connect()
@@ -32,7 +32,7 @@ def fyle():
 @pytest.fixture
 def dbconn():
     """
-
+    connect to a database
     :return: database connection
     """
     SQLITE_DB_FILE = '/tmp/test_fyle.db'
@@ -44,7 +44,7 @@ def dbconn():
 @pytest.fixture
 def fec(fyle, dbconn):
     """
-
+    make FyleExtractConnection
     :param fyle: fyle_connection
     :param dbconn: database_connection
     :return: FyleExtractConnector response
