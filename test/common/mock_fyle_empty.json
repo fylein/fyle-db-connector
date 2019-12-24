@@ -3,7 +3,9 @@
     "settlements_get_all": [],
     "reimbursements_get_all": [],
     "employees_get_all": [],
-    "reports_get_all": [],
+    "advances_get_all": [],
+    "advance_requests_get_all": [],
+    "corporate_cards_get_all": [],
     "projects_get": {
       "url": "/api/tpa/v1/projects",
       "resource_type": "Project",
@@ -12,6 +14,11 @@
     "categories_get": {
       "url": "/api/tpa/v1/categories",
       "resource_type": "Category",
+      "data": []
+    },
+    "cost_centers_get": {
+      "url": "/api/tpa/v1/cost_centers",
+      "resource_type": "CostCenters",
       "data": []
     }
   }

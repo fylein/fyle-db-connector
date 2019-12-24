@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 def get_mock_fyle_dict(filename):
     """
-
+    get the mock_fyle dictionary
     :param filename: filename
     :return: mock_fyle_dict
     """
@@ -23,27 +23,30 @@ def get_mock_fyle_dict(filename):
 
 def get_mock_fyle_from_file(filename):
     """
-
+    get mock_fyle dictionary from the mock_file provided
     :param filename: filename
     :return: mock_fyle
     """
     mock_fyle_dict = get_mock_fyle_dict(filename)
     mock_fyle = Mock()
-
     mock_fyle.Expenses.get_all.return_value = mock_fyle_dict['expenses_get_all']
     mock_fyle.Settlements.get_all.return_value = mock_fyle_dict['settlements_get_all']
     mock_fyle.Reimbursements.get_all.return_value = mock_fyle_dict['reimbursements_get_all']
     mock_fyle.Employees.get_all.return_value = mock_fyle_dict['employees_get_all']
-    mock_fyle.Reports.get_all.return_value = mock_fyle_dict['reports_get_all']
-    mock_fyle.Projects.get.return_value = mock_fyle_dict['projects_get']
-    mock_fyle.Categories.get.return_value = mock_fyle_dict['categories_get']
+    mock_fyle.Advances.get_all.return_value = mock_fyle_dict['advances_get_all']
+    mock_fyle.AdvanceRequests.get_all.return_value = mock_fyle_dict['advance_requests_get_all']
+    mock_fyle.Projects.get.return_value = mock_fyle_dict['projects_get']['data']
+    mock_fyle.CostCenters.get.return_value = mock_fyle_dict['cost_centers_get']['data']
+    mock_fyle.Categories.get.return_value = mock_fyle_dict['categories_get']['data']
+    mock_fyle.CorporateCreditCardExpenses.get_all.return_value = mock_fyle_dict[
+        'corporate_cards_get_all']
 
     return mock_fyle
 
 
 def get_mock_fyle():
     """
-
+    get mock_fyle containing mock_data
     :return: mock_fyle
     """
     return get_mock_fyle_from_file('mock_fyle.json')
@@ -51,15 +54,16 @@ def get_mock_fyle():
 
 def get_mock_fyle_empty():
     """
-
-    :return:mock_fyle
+    get empty mock_fyle
+    :return: mock_fyle
     """
     return get_mock_fyle_from_file('mock_fyle_empty.json')
 
 
 def dict_compare_keys(d1, d2, key_path=''):
-    """ Compare two dicts recursively and see if dict1 has any keys that dict2 does not
-    Returns: list of key paths
+    """
+    Compare two dicts recursively and see if dict1 has any keys that dict2 does not
+    :returns: list of key paths
     """
     res = []
     if not d1:
@@ -85,7 +89,8 @@ def dict_compare_keys(d1, d2, key_path=''):
 
 
 def dbconn_table_num_rows(dbconn, tablename):
-    """ Helper function to calculate number of rows
+    """
+    Helper function to calculate number of rows
     """
     query = f'select count(*) from {tablename}'
     return dbconn.cursor().execute(query).fetchone()[0]
@@ -93,7 +98,7 @@ def dbconn_table_num_rows(dbconn, tablename):
 
 def dbconn_table_row_dict(dbconn, tablename):
     """
-
+    get dictionary first row of the table
     :param dbconn: database connection
     :param tablename: name of the table
     :return: dict containing the first row of the table
@@ -105,7 +110,7 @@ def dbconn_table_row_dict(dbconn, tablename):
 
 def fyle_connect():
     """
-
+    establish connection with fyle
     :return: fyle_connection
     """
     # Initializing FyleSDK
@@ -120,7 +125,7 @@ def fyle_connect():
 
 def execute_sqlfile(dbconn, file_path):
     """
-
+    execute sql file
     :param dbconn: database connection
     :param file_path: path of the sql file
     :return: sql file
