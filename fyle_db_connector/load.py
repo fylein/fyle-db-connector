@@ -78,7 +78,6 @@ class FyleLoadConnector:
             sql=f"select * from fyle_load_tpa_export_batch_lineitems where batch_id = '{batch_id}'",
             con=self.__dbconn
         )
-
         if len(lineitems_df) == 0:
             self.logger.info('Batch %s has no lineitems, skipping', batch_id)
             return
@@ -89,8 +88,9 @@ class FyleLoadConnector:
         self.logger.info('Batch successfully upload. Uploading Line items.')
         self.__connection.Exports.post_batch_lineitems(batch_id, lineitems)
         self.logger.info('%s Lineitems successfully uploaded.', len(lineitems))
+        return batches_df['id'], lineitems_df['batch_id']
 
-    def load_tpa_exports(self, file_path: str = None, file_id: str = None) -> None:
+    def load_tpa_exports(self, file_path: str = None, file_id: str = None):
         """
         Load TPA Export Batches in Fyle
         :param file_path: Path of the export file
@@ -107,6 +107,7 @@ class FyleLoadConnector:
         self.logger.info('Pushing %d batches to Fyle', len(batches))
         for batch in batches:
             self.load_tpa_export_batch(batch_id=batch['id'], file_path=file_path, file_id=file_id)
+            return batches_df['id']
 
     def load_file(self, file_name: str, file_data: BinaryIO, content_type: str) -> str:
         """
