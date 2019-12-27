@@ -62,7 +62,6 @@ class FyleLoadConnector:
                                            f"id = '{batch_id}' limit 1", con=self.__dbconn)
         if len(batches_df) == 0:
             self.logger.info('No such batch')
-            return
 
         if not file_id:
             if file_path:
@@ -80,7 +79,6 @@ class FyleLoadConnector:
         )
         if len(lineitems_df) == 0:
             self.logger.info('Batch %s has no lineitems, skipping', batch_id)
-            return
 
         lineitems = lineitems_df.to_dict(orient='records')
 
@@ -102,7 +100,6 @@ class FyleLoadConnector:
         batches_df = pd.read_sql_query(sql='select id from fyle_load_tpa_export_batches', con=self.__dbconn)
         if len(batches_df) == 0:
             self.logger.info('nothing to export')
-            return
         batches = batches_df.to_dict(orient='records')
         self.logger.info('Pushing %d batches to Fyle', len(batches))
         for batch in batches:
