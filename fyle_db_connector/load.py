@@ -56,7 +56,7 @@ class FyleLoadConnector:
         :param batch_id: Batch ID
         :param file_path: Path of the export file
         :param file_id: Id of file already uploaded to Fyle
-        :return: None
+        :return: Batch ID and Lineitems batch_id
         """
         batches_df = pd.read_sql_query(sql=f"select * from fyle_load_tpa_export_batches where "
                                            f"id = '{batch_id}' limit 1", con=self.__dbconn)
@@ -95,7 +95,7 @@ class FyleLoadConnector:
         Load TPA Export Batches in Fyle
         :param file_path: Path of the export file
         :param file_id: Id of file already uploaded to Fyle
-        :return: None
+        :return: Batch ID
         """
         self.logger.warning('method deprecated - please use load_tpa_export_batch')
 
