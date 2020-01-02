@@ -35,7 +35,7 @@ def fec(fyle, dbconn):
 
 @pytest.fixture
 def flc(fyle, dbconn):
-    res = FyleLoadConnector(fyle=fyle, dbconn=dbconn)
+    res = FyleLoadConnector(fyle_sdk_connection=fyle, dbconn=dbconn)
     res.create_tables()
     basepath = path.dirname(__file__)
     sqlpath = path.join(basepath, '../common/mock_db_load.sql')

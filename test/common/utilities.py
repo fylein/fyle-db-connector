@@ -4,6 +4,7 @@ import os
 from os import path
 from unittest.mock import Mock
 from fylesdk import FyleSDK
+from fyle_db_connector import FyleExtractConnector
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +36,9 @@ def get_mock_fyle_from_file(filename):
     mock_fyle.Employees.get_all.return_value = mock_fyle_dict['employees_get_all']
     mock_fyle.Advances.get_all.return_value = mock_fyle_dict['advances_get_all']
     mock_fyle.AdvanceRequests.get_all.return_value = mock_fyle_dict['advance_requests_get_all']
-    mock_fyle.Projects.get.return_value = mock_fyle_dict['projects_get']['data']
-    mock_fyle.CostCenters.get.return_value = mock_fyle_dict['cost_centers_get']['data']
-    mock_fyle.Categories.get.return_value = mock_fyle_dict['categories_get']['data']
+    mock_fyle.Projects.get.return_value = mock_fyle_dict['projects_get']
+    mock_fyle.CostCenters.get.return_value = mock_fyle_dict['cost_centers_get']
+    mock_fyle.Categories.get.return_value = mock_fyle_dict['categories_get']
     mock_fyle.CorporateCreditCardExpenses.get_all.return_value = mock_fyle_dict[
         'corporate_cards_get_all']
 
@@ -121,6 +122,16 @@ def fyle_connect():
         refresh_token=os.environ.get('FYLE_TPA_REFRESH_TOKEN')
     )
     return fyle_connection
+
+
+def fec(dbconn):
+    """
+
+    :param dbconn: database connection
+    :return: fyle_extract
+    """
+    fyle_extract = FyleExtractConnector(fyle_sdk_connection=fyle_connect(), dbconn=dbconn)
+    return fyle_extract
 
 
 def execute_sqlfile(dbconn, file_path):

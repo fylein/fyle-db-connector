@@ -95,7 +95,7 @@ def test_projects(fyle, mock_fyle):
     :return: None
     """
     data = fyle.Projects.get()['data']
-    mock_data = mock_fyle.Projects.get()
+    mock_data = mock_fyle.Projects.get()['data']
     assert dict_compare_keys(data[0], mock_data[0]) == [], 'real fyle has stuff that mock_fyle doesnt'
     assert dict_compare_keys(mock_data[0], data[0]) == [], 'mock_fyle has stuff that real fyle doesnt'
 
@@ -108,7 +108,7 @@ def test_cost_centers(fyle, mock_fyle):
     :return: None
     """
     data = fyle.CostCenters.get()['data']
-    mock_data = mock_fyle.CostCenters.get()
+    mock_data = mock_fyle.CostCenters.get()['data']
     assert dict_compare_keys(data[0], mock_data[0]) == [], 'real fyle has stuff that mock_fyle doesnt'
     assert dict_compare_keys(mock_data[0], data[0]) == [], 'mock_fyle has stuff that real fyle doesnt'
 
@@ -121,7 +121,7 @@ def test_categories(fyle, mock_fyle):
     :return: None
     """
     data = fyle.Categories.get()['data']
-    mock_data = mock_fyle.Categories.get()
+    mock_data = mock_fyle.Categories.get()['data']
     assert dict_compare_keys(data[0], mock_data[0]) == [], 'real fyle has stuff that mock_fyle doesnt'
     assert dict_compare_keys(mock_data[0], data[0]) == [], 'mock_fyle has stuff that real fyle doesnt'
 
