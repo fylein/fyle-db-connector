@@ -146,7 +146,6 @@ def test_projects(fec):
     dbconn = fec._FyleExtractConnector__dbconn
     fyle = fec._FyleExtractConnector__connection
     ids = fec.extract_projects()
-    print(ids)
     fyle_data = fyle.Projects.get()['data']
     db_data = dbconn_table_row_dict(dbconn, 'fyle_extract_projects')
     assert dict_compare_keys(db_data, fyle_data[0]) == [], 'db table has some columns that fyle doesnt'
