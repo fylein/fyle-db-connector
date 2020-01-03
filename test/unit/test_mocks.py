@@ -37,6 +37,21 @@ def test_fec_mock_setup(fec):
     assert dbconn_table_num_rows(dbconn, 'fyle_extract_employees') == 0, 'Unclean db'
 
 
+def test_flc_mock_setup(flc, dbconn):
+    """
+    Testing Load Connector with mock instance
+    """
+    logger.info('Testing Load Connector with mock instance')
+
+    flc.create_tables()
+    sqlpath = './test/common/mock_db_load.sql'
+    sql = open(sqlpath, 'r').read()
+    dbconn.executescript(sql)
+
+    assert dbconn_table_num_rows(dbconn, 'fyle_load_tpa_export_batches') == 2, 'Unclean db'
+    assert dbconn_table_num_rows(dbconn, 'fyle_load_tpa_export_batch_lineitems') == 4, 'Unclean db'
+
+
 def test_dict_compare():
     """
     Testing dict compare function
