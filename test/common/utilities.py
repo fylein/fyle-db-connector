@@ -52,10 +52,12 @@ def get_mock_fyle_from_file(filename):
     mock_fyle.Categories.get.return_value = mock_fyle_dict['categories_get']
     mock_fyle.CorporateCreditCardExpenses.get_all.return_value = mock_fyle_dict[
         'corporate_cards_get_all']
-    mock_fyle.Exports.post_batch_lineitems.save.return_value = copy.deepcopy(mock_fyle_dict['post_batch_lineitems_response'])
+    mock_fyle.Exports.post_batch_lineitems.save.return_value = copy.deepcopy(
+        mock_fyle_dict['post_batch_lineitems_response'])
     mock_fyle.Exports.post_batch.return_value = copy.deepcopy(mock_fyle_dict['post_batch_sdk_response'])
     mock_fyle.Exports.post_batch.save.return_value = copy.deepcopy(mock_fyle_dict['post_batch_response'])
-    mock_fyle.Exports.post_batch_lineitems.return_value = copy.deepcopy(mock_fyle_dict['post_batch_lineitems_sdk_response'])
+    mock_fyle.Exports.post_batch_lineitems.return_value = copy.deepcopy(
+        mock_fyle_dict['post_batch_lineitems_sdk_response'])
 
     return mock_fyle
 
@@ -136,7 +138,7 @@ def dbconn_get_load_object_by_id(dbconn, tablename, object_id):
 
 def dbconn_get_load_object_by_batch_id(dbconn, tablename, batch_id):
     """
-    Get load object by Id
+    Get load object by batch_id
     """
     dbconn.row_factory = dict_factory
     query = f"select * from {tablename} where batch_id = '{batch_id}'"
@@ -167,6 +169,7 @@ def fec(dbconn):
     """
     fyle_extract = FyleExtractConnector(fyle_sdk_connection=fyle_connect(), dbconn=dbconn)
     return fyle_extract
+
 
 def flc(dbconn):
     """
