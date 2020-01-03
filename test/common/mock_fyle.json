@@ -1440,5 +1440,25 @@
         }
 
   ]
-  }
+  },
+    "post_batch_response": {
+        "url": "/api/tpa/v1/export_batches",
+        "resource_type": "Export",
+        "id": "exbtJLQ7rcwdDd"
+  },
+    "post_batch_lineitems_response": {
+        "url": "/api/tpa/v1/export_batches/{tpa_export_batch_id}/lineitems",
+        "resource_type": "Export",
+        "ids": ["expWvtuMDWXuk"]
+    },
+    "post_batch_sdk_response": {
+        "url": "/api/tpa/v1/export_batches",
+        "resource_type": "Export",
+        "id": "exbtJLQ7rcwdDd"
+    },
+    "post_batch_lineitems_sdk_response": {
+        "url": "/api/tpa/v1/export_batches/{tpa_export_batch_id}/lineitems",
+        "resource_type": "Export",
+        "ids": ["expWvtuMDWXuk"]
+    }
 }
