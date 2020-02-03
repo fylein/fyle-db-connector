@@ -90,7 +90,7 @@ class FyleExtractConnector:
 
     def extract_expenses(self, settlement_ids: List[str] = None, state: List[str] = None,
                          fund_source: List[str] = None, reimbursable: bool = None, updated_at: List[str] = None,
-                         exported: bool = None, extract_custom_fields: bool = True) -> List[str]:
+                         exported: bool = None, extract_custom_fields: bool = True, spent_at: List[str] = None, report_ids: List[str] = None) -> List[str]:
         """
         Extract expenses from Fyle
         :param extract_custom_fields: Flag to extract custom fields, true by default
@@ -100,6 +100,8 @@ class FyleExtractConnector:
         :param state: List of expense states
         :param fund_source: List of expense fund_sources
         :param reimbursable: True for reimbursable expenses, False for non reimbursable expenses
+        :param spent_at: Extract expenses in spent_at date range
+        :param report_ids: List of report_ids
         :return: List of expense ids
         """
 
@@ -110,7 +112,9 @@ class FyleExtractConnector:
             state=state,
             updated_at=updated_at,
             fund_source=fund_source,
-            exported=exported
+            exported=exported,
+            spent_at=spent_at,
+            report_id=report_ids
         )
 
         if reimbursable is not None:
