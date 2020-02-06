@@ -445,15 +445,13 @@ class FyleExtractConnector:
         if reports:
             df_reports = pd.DataFrame(reports)
 
-            df_reports['export_ids'] = df_reports['export_ids'].map(lambda report: report[0] if report else None)
-            df_reports['transaction_ids'] = df_reports['transaction_ids'].map(lambda report: report[0] if report else None)
             df_reports['approved_by'] = df_reports['approved_by'].map(lambda report: report[0] if report else None)
 
             df_reports = df_reports[[
                 'id', 'employee_id', 'employee_email', 'employee_code', 'state',
                 'amount', 'purpose', 'claim_number', 'created_at', 'updated_at', 'approved_at',
                 'reimbursed_at', 'trip_request_id', 'settlement_id', 'org_id', 'org_name', "verified",
-                "exported", "export_ids", "transaction_ids", "approved_by", "created_by", "settled_at"
+                "exported", "approved_by", "created_by", "settled_at"
             ]]
 
             df_reports.to_sql('fyle_extract_reports', self.__dbconn, if_exists='append', index=False)

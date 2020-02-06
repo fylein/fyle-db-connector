@@ -274,10 +274,8 @@ CREATE TABLE IF NOT EXISTS fyle_extract_reports (
   "settlement_id" TEXT,
   "org_id" TEXT,
   "org_name" TEXT,
-  "transaction_ids" TEXT,
   "verified" INTEGER,
   "exported" INTEGER,
-  "export_ids" TEXT,
   "approved_by" TEXT,
   "created_by" TEXT,
   "settled_at" DATETIME
