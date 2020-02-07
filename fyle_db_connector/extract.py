@@ -262,7 +262,7 @@ class FyleExtractConnector:
         Extract projects from Fyle
         :return: List of project ids
         """
-        self.logger.info('Extracting categories from Fyle.')
+        self.logger.info('Extracting projects from Fyle.')
 
         projects = self.__connection.Projects.get()['data']
 
@@ -287,7 +287,7 @@ class FyleExtractConnector:
         Extract cost centers from Fyle
         :return: List of cost center ids
         """
-        self.logger.info('Extracting categories from Fyle.')
+        self.logger.info('Extracting cost centers from Fyle.')
 
         cost_centers = self.__connection.CostCenters.get(False)['data']
 
@@ -423,5 +423,38 @@ class FyleExtractConnector:
 
             df_advance_requests.to_sql('fyle_extract_advance_requests', self.__dbconn, if_exists='append', index=False)
             return df_advance_requests['id'].to_list()
+
+        return []
+
+    def extract_reports(self, updated_at: List[str] = None, exported: bool = None) -> List[str]:
+        """
+        Extract reports from Fyle
+        :param updated_at: Date string in yyyy-MM-ddTHH:mm:ss.SSSZ format along with operator in RHS colon pattern.
+        :param exported: True for exported reports and False for unexported reports
+        :return: List of report ids
+        """
+        self.logger.info('Extracting reports from Fyle.')
+
+        reports = self.__connection.Reports.get_all(
+            updated_at=updated_at,
+            exported=exported
+        )
+
+        self.logger.info('%s reports extracted.', str(len(reports)))
+
+        if reports:
+            df_reports = pd.DataFrame(reports)
+
+            df_reports['approved_by'] = df_reports['approved_by'].map(lambda report: report[0] if report else None)
+
+            df_reports = df_reports[[
+                'id', 'employee_id', 'employee_email', 'employee_code', 'state',
+                'amount', 'purpose', 'claim_number', 'created_at', 'updated_at', 'approved_at',
+                'reimbursed_at', 'trip_request_id', 'settlement_id', 'org_id', 'org_name', "verified",
+                "exported", "approved_by", "created_by", "settled_at"
+            ]]
+
+            df_reports.to_sql('fyle_extract_reports', self.__dbconn, if_exists='append', index=False)
+            return df_reports['id'].to_list()
 
         return []

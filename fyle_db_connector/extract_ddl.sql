@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS fyle_extract_attachments;
 DROP TABLE IF EXISTS fyle_extract_categories;
 DROP TABLE IF EXISTS fyle_extract_projects;
 DROP TABLE IF EXISTS fyle_extract_cost_centers;
+DROP TABLE IF EXISTS fyle_extract_reports;
 
 CREATE TABLE fyle_extract_employees (
   "id" TEXT,
@@ -254,4 +255,28 @@ CREATE TABLE fyle_extract_cost_centers (
   "active" INTEGER,
   "org_id" TEXT,
   "org_name" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS fyle_extract_reports (
+  "id" TEXT,
+  "employee_id" TEXT,
+  "employee_email" TEXT,
+  "employee_code" TEXT,
+  "state" TEXT,
+  "amount" INTEGER,
+  "purpose" TEXT,
+  "claim_number" TEXT,
+  "created_at" DATETIME,
+  "updated_at" DATETIME,
+  "approved_at" DATETIME,
+  "reimbursed_at" DATETIME,
+  "trip_request_id" TEXT,
+  "settlement_id" TEXT,
+  "org_id" TEXT,
+  "org_name" TEXT,
+  "verified" INTEGER,
+  "exported" INTEGER,
+  "approved_by" TEXT,
+  "created_by" TEXT,
+  "settled_at" DATETIME
 );
