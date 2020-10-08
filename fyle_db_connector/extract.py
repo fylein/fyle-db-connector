@@ -133,9 +133,9 @@ class FyleExtractConnector:
                 'cost_center_id', 'cost_center_name', 'category_id', 'category_code', 'category_name',
                 'sub_category', 'settlement_id', 'expense_number', 'claim_number', 'trip_request_id',
                 'state', 'report_id', 'fund_source', 'reimbursable', 'created_at', 'updated_at',
-                'approved_at', 'settled_at', 'verified', 'verified_at', 'reimbursed_at', 'added_to_report_at',
-                'report_submitted_at', 'vendor', 'has_attachments', 'billable', 'exported',
-                'approved_by', 'org_id', 'org_name', 'created_by'
+                'approved_at', 'settled_at', 'split_group_id', 'split_group_user_amount', 'verified',
+                'verified_at', 'reimbursed_at', 'added_to_report_at', 'report_submitted_at', 'vendor',
+                'has_attachments', 'billable', 'exported', 'approved_by', 'org_id', 'org_name', 'created_by'
             ]]
 
             df_expenses.to_sql('fyle_extract_expenses', self.__dbconn, if_exists='append', index=False)
@@ -199,7 +199,7 @@ class FyleExtractConnector:
                 'id', 'employee_email', 'org_user_id', 'org_id', 'org_name', 'created_at', 'updated_at', 'spent_at',
                 'amount', 'currency', 'foreign_amount', 'foreign_currency', 'vendor', 'description', 'settlement_id',
                 'corporate_credit_card_account_number', 'personal', 'expense_id', 'reimbursement_state', 'state',
-                'transaction_type', 'exported', 'exported_at'
+                'transaction_type', 'exported', 'exported_at', 'expense_split_group_id'
             ]]
 
             df_ccc_expenses.to_sql('fyle_extract_corporate_credit_card_expenses', self.__dbconn, if_exists='append',

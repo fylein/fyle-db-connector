@@ -73,6 +73,8 @@ CREATE TABLE fyle_extract_expenses (
   "approved_at" DATETIME,
   "settled_at" DATETIME,
   "verified" INTEGER,
+  "split_group_id" TEXT,
+  "split_group_user_amount" INTEGER,
   "verified_at" DATETIME,
   "reimbursed_at" DATETIME,
   "added_to_report_at" DATETIME,
@@ -116,7 +118,8 @@ CREATE TABLE fyle_extract_corporate_credit_card_expenses (
   "transaction_type" TEXT,
   "state" TEXT,
   "exported" INTEGER,
-  "exported_at" DATETIME
+  "exported_at" DATETIME,
+  "expense_split_group_id" TEXT
 );
 
 CREATE TABLE fyle_extract_settlements (
