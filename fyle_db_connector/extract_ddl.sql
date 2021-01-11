@@ -86,7 +86,9 @@ CREATE TABLE fyle_extract_expenses (
   "approved_by" TEXT,
   "org_id" TEXT,
   "org_name" TEXT,
-  "created_by" TEXT
+  "created_by" TEXT,
+  "from_dt" DATETIME,
+  "to_dt" DATETIME
 );
 
 CREATE TABLE fyle_extract_expense_custom_properties (
