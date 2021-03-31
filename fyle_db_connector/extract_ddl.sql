@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS fyle_extract_employees;
+DROP TABLE IF EXISTS fyle_extract_employee_custom_fields;
 DROP TABLE IF EXISTS fyle_extract_expenses;
 DROP TABLE IF EXISTS fyle_extract_expense_custom_properties;
 DROP TABLE IF EXISTS fyle_extract_corporate_credit_card_expenses;
@@ -39,6 +40,12 @@ CREATE TABLE fyle_extract_employees (
   "disabled" INTEGER,
   "org_id" TEXT,
   "org_name" TEXT
+);
+
+CREATE TABLE fyle_extract_employee_custom_fields (
+  "employee_id" text,
+  "name" text,
+  "value" text
 );
 
 CREATE TABLE fyle_extract_expenses (
@@ -86,7 +93,9 @@ CREATE TABLE fyle_extract_expenses (
   "approved_by" TEXT,
   "org_id" TEXT,
   "org_name" TEXT,
-  "created_by" TEXT
+  "created_by" TEXT,
+  "from_dt" DATETIME,
+  "to_dt" DATETIME
 );
 
 CREATE TABLE fyle_extract_expense_custom_properties (

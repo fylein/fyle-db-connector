@@ -60,7 +60,7 @@ class FyleExtractConnector:
 
         return []
 
-    def extract_employees(self) -> List[str]:
+    def extract_employees(self, extract_custom_fields: bool = True) -> List[str]:
         """
         Extract employees from Fyle
         :return: List of employee ids
@@ -84,6 +84,24 @@ class FyleExtractConnector:
             ]]
 
             df_employees.to_sql('fyle_extract_employees', self.__dbconn, if_exists='append', index=False)
+
+            custom_fields = []
+            for e in employees:
+                if 'custom_fields' in e and e['custom_fields']:
+                    for cp in e['custom_fields']:
+                        custom_fields.append({
+                            'employee_id': e['id'],
+                            'name': cp['custom_field_name'],
+                            'value': cp['custom_field_value']
+                        })
+
+            if extract_custom_fields:
+                if custom_fields:
+                    df_custom_fields = pd.DataFrame(custom_fields)
+                    df_custom_fields = df_custom_fields.astype('str')
+                    df_custom_fields.to_sql('fyle_extract_employee_custom_fields', self.__dbconn,
+                                            if_exists='append', index=False)
+
             return df_employees['id'].to_list()
 
         return []
@@ -135,7 +153,8 @@ class FyleExtractConnector:
                 'state', 'report_id', 'fund_source', 'reimbursable', 'created_at', 'updated_at',
                 'approved_at', 'settled_at', 'split_group_id', 'split_group_user_amount', 'verified',
                 'verified_at', 'reimbursed_at', 'added_to_report_at', 'report_submitted_at', 'vendor',
-                'has_attachments', 'billable', 'exported', 'approved_by', 'org_id', 'org_name', 'created_by'
+                'has_attachments', 'billable', 'exported', 'approved_by', 'org_id', 'org_name', 'created_by',
+                'from_dt', 'to_dt'
             ]]
 
             df_expenses.to_sql('fyle_extract_expenses', self.__dbconn, if_exists='append', index=False)
@@ -153,6 +172,7 @@ class FyleExtractConnector:
             if extract_custom_fields:
                 if custom_properties:
                     df_custom_properties = pd.DataFrame(custom_properties)
+                    df_custom_properties = df_custom_properties.astype('str')
                     df_custom_properties.to_sql('fyle_extract_expense_custom_properties', self.__dbconn,
                                                 if_exists='append', index=False)
 
