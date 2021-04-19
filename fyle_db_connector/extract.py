@@ -154,7 +154,7 @@ class FyleExtractConnector:
                 'approved_at', 'settled_at', 'split_group_id', 'split_group_user_amount', 'verified',
                 'verified_at', 'reimbursed_at', 'added_to_report_at', 'report_submitted_at', 'vendor',
                 'has_attachments', 'billable', 'exported', 'approved_by', 'org_id', 'org_name', 'created_by',
-                'from_dt', 'to_dt'
+                'from_dt', 'to_dt', 'cost_center_code'
             ]]
 
             df_expenses.to_sql('fyle_extract_expenses', self.__dbconn, if_exists='append', index=False)
