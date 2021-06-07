@@ -288,7 +288,7 @@ class FyleExtractConnector:
         """
         self.logger.info('Extracting projects from Fyle.')
 
-        projects = self.__connection.Projects.get()['data']
+        projects = self.__connection.Projects.get_all()
 
         self.logger.info('%s projects extracted.', str(len(projects)))
 

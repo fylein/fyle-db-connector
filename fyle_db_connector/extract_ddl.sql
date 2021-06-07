@@ -61,6 +61,7 @@ CREATE TABLE fyle_extract_expenses (
   "purpose" TEXT,
   "project_id" TEXT,
   "project_name" TEXT,
+  "project_code" TEXT,
   "cost_center_id" TEXT,
   "cost_center_name" TEXT,
   "cost_center_code" TEXT,
